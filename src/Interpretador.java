@@ -11,23 +11,24 @@ public class Interpretador {
 
 	public static void interpretador(String mem[], int enderecoInicial) {
 
-		for (String string : mem) {
-			System.out.println(string);
-		}
-		System.out.println("----------------------");
+		// for (String string : mem) {
+		// System.out.println(string);
+		// }
+		// System.out.println("----------------------");
 		memoria = mem;
-
-		System.out.println(memoria.length);
+		// System.out.println(memoria.length);
 		contadorDePrograma = enderecoInicial;
 
 		while (!parar & memoria.length > 0) {
-			System.out.println();
-			System.out.println(acumulador);
+
 			instrucao = memoria[contadorDePrograma];
 			contadorDePrograma += 1;
 			tipoDeInstrucao = getTipoDeInstrucao(instrucao);
 
 			if (tipoDeInstrucao != null) {
+
+				System.out.println(acumulador);
+				System.out.println();
 				if (tipoDeInstrucao != TipoInstrucao.HALT)
 					enderecoDosDados = encontrarDados(instrucao, tipoDeInstrucao);
 
@@ -56,6 +57,8 @@ public class Interpretador {
 		case "HALT":
 			return TipoInstrucao.HALT;
 
+		case "MOVE":
+			return TipoInstrucao.MOVE;
 		default:
 			return null;
 		}
@@ -75,21 +78,35 @@ public class Interpretador {
 	}
 
 	public static void executar(TipoInstrucao tipoDeInstrucao, String operando) {
-		System.out.println(acumulador +" "+ tipoDeInstrucao+" "+ operando);
-		
+
+		if (tipoDeInstrucao != TipoInstrucao.HALT & tipoDeInstrucao != null) {
+			System.out.println(acumulador + " " + tipoDeInstrucao + " " + operando);
+		} else {
+			if (tipoDeInstrucao == TipoInstrucao.HALT) {
+
+				System.out.println(acumulador + " " + tipoDeInstrucao);
+			} else {
+				System.out.println("Instrução inválida");
+			}
+
+		}
+
 		switch (tipoDeInstrucao) {
 		case AND:
-			acumulador = acumulador & Integer.parseInt(operando);
+			if (Util.isInteger(operando))
+				acumulador = acumulador & Integer.parseInt(operando);
 
 			break;
 
 		case OR:
-			acumulador = acumulador | Integer.parseInt(operando);
+			if (Util.isInteger(operando))
+				acumulador = acumulador | Integer.parseInt(operando);
 
 			break;
 
 		case XOR:
-			acumulador = acumulador ^ Integer.parseInt(operando);
+			if (Util.isInteger(operando))
+				acumulador = acumulador ^ Integer.parseInt(operando);
 
 			break;
 
@@ -97,12 +114,15 @@ public class Interpretador {
 			parar = true;
 
 			break;
-		case COM:
-			break;
+		case MOVE:
+			if (Util.isInteger(operando) & Integer.parseInt(operando)<=memoria.length)
+				contadorDePrograma = Integer.parseInt(operando);
+				break;
 		default:
 			break;
 
 		}
+
 	}
 
 }
